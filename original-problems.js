@@ -1,4 +1,4 @@
-const problems = [
+const originalProblems = [
 	{
 		content: {
 			title: "Nothing but the Truth",
@@ -1060,6 +1060,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/86",
 		number: 86,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/87", number: 87 },
 	{
 		content: {
 			title: "Symmetric Difference",
@@ -1330,6 +1331,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/108",
 		number: 108,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/109", number: 109 },
 	{
 		content: {
 			title: "Sequence of pronunciations",
@@ -1500,6 +1502,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/122",
 		number: 122,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/123", number: 123 },
 	{
 		content: {
 			title: "Analyze Reversi",
@@ -1562,6 +1565,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/128",
 		number: 128,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/129", number: 129 },
 	{
 		content: {
 			title: "Tree reparenting",
@@ -1601,6 +1605,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/132",
 		number: 132,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/133", number: 133 },
 	{
 		content: {
 			title: "A nil key",
@@ -1626,6 +1631,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/135",
 		number: 135,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/136", number: 136 },
 	{
 		content: {
 			title: "Digits and bases",
@@ -1652,6 +1658,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/138",
 		number: 138,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/139", number: 139 },
 	{
 		content: {
 			title: "Veitch, Please!",
@@ -1678,6 +1685,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/141",
 		number: 141,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/142", number: 142 },
 	{
 		content: {
 			title: "dot product",
@@ -1756,6 +1764,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/148",
 		number: 148,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/149", number: 149 },
 	{
 		content: {
 			title: "Palindromic Numbers",
@@ -1769,6 +1778,7 @@ const problems = [
 		url: "https://www.4clojure.com/problem/150",
 		number: 150,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/151", number: 151 },
 	{
 		content: {
 			title: "Latin Square Slicing",
@@ -1795,6 +1805,8 @@ const problems = [
 		url: "https://www.4clojure.com/problem/153",
 		number: 153,
 	},
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/154", number: 154 },
+	{ content: { name: "TimeoutError" }, url: "https://www.4clojure.com/problem/155", number: 155 },
 	{
 		content: {
 			title: "Map Defaults",
@@ -1808,4 +1820,5 @@ const problems = [
 		number: 156,
 	},
 ];
-module.exports = problems;
+
+module.exports = originalProblems;

@@ -12,6 +12,8 @@ There is three variants in the md-folder:
 - roamy: includes the plain-variant, tags for each problem, tags for solved-problems, a query for displaying solved and unsolved problems, a todo-list of used syntax for each problems to make sure you understand the code before trying to solve it (each syntax element only appears once and is not repeated in other problems!).
 - roamysr: includes roamy-variant, adds a #sr tag to each problem and a question for each piece of syntax. (WARNING: this adds about 200 prompts to your roamsr-queue so dont do it if you dont have the time for pure Clojure-learning)
 
+TODO: collison WARNING, https://zelark.github.io/nano-id-cc/, uid with 9 characters and if you make 100 blocks per hour in 22 years you have 1% collision probability, no guarantee.
+
 # Code Files:
 
 - index.js: the script that uses puppeteer to scrape the problems and the functions for transforming the data into a Roam-usable format.

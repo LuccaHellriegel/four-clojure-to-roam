@@ -44,29 +44,15 @@ const getTags = async (page) => {
 };
 
 const splitDescription = (fullDescription) => {
-	const temp = fullDescription
-		.split("Special Restrictions")
-		.map((s) => s.trim())
-		.map((s) =>
-			s
-				.split("\n")
-				.map((s) => s.trim())
-				.map((s) => s.replace(new RegExp("  ", "g"), " "))
-				.map((s) => s.replace(new RegExp("\t", "g"), " "))
-				.filter((s) => s !== "")
-		);
+	const temp = fullDescription.split("Special Restrictions").map((s) => s.trim());
 
 	const restrictions = temp[1];
 
-	const code = [];
-	const desc = [];
-	for (let s of temp[0]) {
-		if (s[0] === "(" && s[s.length - 1] === ")") {
-			code.push(s);
-		} else {
-			desc.push(s);
-		}
-	}
+	const separatorIndex = temp[0].indexOf("\n(");
+
+	const desc = temp[0].slice(0, separatorIndex).trim();
+	const code = temp[0].slice(separatorIndex).trim();
+
 	return { code, desc, restrictions };
 };
 
@@ -74,9 +60,16 @@ const getProblemDescription = async (page) => splitDescription(await getInnerTex
 
 const getBuiltInSyntax = async (page) => {
 	const selector = "span.cm-builtin";
-	await page.waitForSelector(selector);
-	let temp = await page.$$(selector);
-	temp = await Promise.all(temp.map((handler) => handler.evaluate((s) => s.innerText)));
+	let temp;
+	try {
+		await page.waitForSelector(selector, { timeout: 5000 });
+		temp = await page.$$(selector);
+		temp = await Promise.all(temp.map((handler) => handler.evaluate((s) => s.innerText)));
+		// ...
+	} catch (error) {
+		return undefined;
+	}
+
 	return Array.from(new Set(temp));
 };
 
@@ -123,7 +116,7 @@ const problemRangeURLs = (start, end) => {
 };
 
 const saveProblems = (contents) => {
-	fs.writeFileSync("./problems.js", JSON.stringify(contents));
+	fs.writeFileSync("./original-problems.js", JSON.stringify(contents));
 };
 
 const problemCount = 156;
@@ -147,32 +140,51 @@ const scrapeFourClojure = async () => {
 	saveProblems(pageObjects);
 };
 
-const problems = require("./problems");
+const rescrapeTimeouts = async () => {
+	const urlObjects = require("./problems")
+		.filter((problem) => !problem.content.name)
+		.map((problem) => {
+			return { url: problem.url, number: problem.number };
+		});
 
-// TODO: structure the whole problem inside the clojure-code-block so I can display it via sr
+	const browser = await startBrowser();
+	const pageObjects = [];
+	for (let urlObj of urlObjects) {
+		// one page at a time to not overload my computer with tabs
+		// could be speed up by reducing the timeouts on the waitForSelectors
+		const content = await scrapeProblemPage(browser, urlObj.url);
+		if (content) pageObjects.push({ content, ...urlObj });
+		sleep(2000);
+	}
 
-// TODO: write "What belongs at _?" -> testcases!
+	browser.close();
 
-// TODO: built runtime checks if the data is valid, I dont want to check the whole markdown file
+	console.log(pageObjects.length);
 
-// TODO: check how the markdown formatting of code is with regards to newlines and tabs and spaces
+	fs.writeFileSync("./timeout-problems.js", JSON.stringify(pageObjects));
+};
 
-// TODO:
-// make query in the beginning for all problems without a solved tag and with one, also tag each problem with #4clojureProblem
+const filterTimeoutProblems = (problems) => problems.filter((problem) => !problem.content.name);
 
-// TODO: make tags for learned and not learned syntax
-// pre-make questions and make a query of unfinishedprompts
-// What is the signature of this function? #UnfinishedPrompt
-// What does this function do?
+const merge = () => {
+	const problems = filterTimeoutProblems(require("./original-problems"));
+	const withoutSyntax = require("./timeout-problems");
 
-// TODO get all classes of the object inside the lines
-// built in I can use for making a todo-list of syntax
-// make it like [] understand syntax of "*"
-// What does (* ...) do? and what are is its signature?
+	const res = problems.concat(withoutSyntax).sort((probA, probB) => probA.number - probB.number);
+	fs.writeFileSync("./problems.js", "const problems = " + JSON.stringify(res) + "\nmodule.exports = problems;");
+};
 
-// But need to filter syntax from lower problems, so its not repeated!
-// need to catch URLs in the description
-// need to catch "restrictions" -> "Special Restrictions"
-// -> but I need only the li-elements
-// option to add #sr tags?
-// parse tags-table to blocks
+const removeTimeoutProblems = () => {
+	const problems = require("./original-problems");
+	const res = filterTimeoutProblems(problems);
+
+	// console.log(
+	// 	problems.length,
+	// 	filterTimeoutProblems(problems).length,
+	// 	problems.filter((problem) => problem.content.name).length
+	// );
+	// const res = problems.concat(withoutSyntax).sort((probA, probB) => probA.number - probB.number);
+	fs.writeFileSync("./problems.js", "const problems = " + JSON.stringify(res) + "\nmodule.exports = problems;");
+};
+
+removeTimeoutProblems();
