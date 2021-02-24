@@ -43,6 +43,11 @@ const getTags = async (page) => {
 		.filter((s) => s !== "");
 };
 
+const regexIndexOf = (string, regex, startpos) => {
+	var indexOf = string.substring(startpos || 0).search(regex);
+	return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
+};
+
 const splitDescription = (fullDescription) => {
 	const temp = fullDescription.split("Special Restrictions").map((s) => s.trim());
 

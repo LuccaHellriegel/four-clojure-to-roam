@@ -1800,8 +1800,9 @@ const problems = [
 			title: "Map Defaults",
 			tags: ["Difficulty: Elementary", "Topics: seqs"],
 			code:
-				'(= 2 (:foo {:bar 0, :baz 1} 2))\n\nHowever, what if you want the map itself to contain the default values? Write a function which takes a default value and a sequence of keys and constructs a map.\n\n\t\n(= (__ 0 [:a :b :c]) {:a 0 :b 0 :c 0})\n\n\t\n(= (__ "x" [1 2 3]) {1 "x" 2 "x" 3 "x"})\n\n\t\n(= (__ [:a :b] [:foo :bar]) {:foo [:a :b] :bar [:a :b]})',
-			desc: "When retrieving values from a map, you can specify default values in case the key is not found:",
+				'(= (__ 0 [:a :b :c]) {:a 0 :b 0 :c 0})\n\n\t\n(= (__ "x" [1 2 3]) {1 "x" 2 "x" 3 "x"})\n\n\t\n(= (__ [:a :b] [:foo :bar]) {:foo [:a :b] :bar [:a :b]})',
+			desc:
+				"When retrieving values from a map, you can specify default values in case the key is not found:\n\n(= 2 (:foo {:bar 0, :baz 1} 2))\n\nHowever, what if you want the map itself to contain the default values? Write a function which takes a default value and a sequence of keys and constructs a map.",
 			syntax: ["="],
 		},
 		url: "https://www.4clojure.com/problem/156",

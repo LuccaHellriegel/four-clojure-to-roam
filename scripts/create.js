@@ -3,7 +3,112 @@ const nanoid = require("nanoid").nanoid;
 
 const problems = require("./problems");
 
-const emailPlaceholder = "$emailPlaceholder";
+const startsWithArr = [
+	'" ##   "',
+	'" ##   "',
+	'"   ## "',
+	'"   ## "',
+	'"      "',
+	"(",
+	"[",
+	"{",
+	"true)",
+	"false)",
+	"'(",
+	"result []]",
+	"result)",
+	"5)",
+	"82)",
+	"11)",
+	"x",
+	"#(",
+	"#{",
+	'"d _ # e"',
+	'"r y _ _"]))',
+	'"d _ # e"',
+	'"_ _ o _ _ _ _"',
+	'"_ _ f _ # _ _"]))',
+	'"#     #"',
+	'"#  #  #"',
+	'"#M # C#"',
+	'"#######"]))',
+	'"#M  #  #"',
+	'"#   #  #"',
+	'"# # #  #"',
+	'"#   #  #"',
+	'"#  #   #"',
+	'"#  # # #"',
+	'"#  #   #"',
+	'"#  #  C#"',
+	'"########"]))',
+	'"      "',
+	'"    ##"',
+	'"    #C"]))',
+	'" #     "',
+	'" #   # "',
+	'" #   #M"',
+	'"     # "]))',
+	'"        "',
+	'"# # # # "',
+	'" # # # #"',
+	'"# # # #M"]))',
+];
+
+const correct = [94, 111, 121, 127, 128, 132, 138, 145, 146, 150];
+
+const fixWronglySplitDesc = () => {
+	const fixed = problems
+		.filter(
+			(problem) =>
+				problem.content.code
+					.split("\n")
+					.filter((s) => s.trim() !== "")
+					.map((s) => s.trim())
+					.filter((s) => {
+						return (
+							!correct.includes(problem.number) && startsWithArr.reduce((prev, cur) => prev && !s.startsWith(cur), true)
+						);
+					}).length !== 0
+		)
+		.map((problem) => {
+			console.log(problem.number);
+
+			const code = problem.content.code.split("\n");
+			// finding last index of non code line
+			let index = 0;
+			for (let i = 0; i < code.length; i++) {
+				const cur = code[i];
+				if (!cur.trim().startsWith("(") && cur.trim() !== "") {
+					index = i;
+				}
+			}
+			const moreDesc = code.slice(0, index + 1).join("\n");
+			const actualCode = code.slice(index + 1).join("\n");
+			return {
+				...problem,
+				content: {
+					...problem.content,
+					desc: problem.content.desc.trim() + "\n\n" + moreDesc.trim(),
+					code: actualCode.trim(),
+				},
+			};
+		});
+	console.log(fixed.length);
+	// fixed
+	// problems.filter(
+	// 	(problem) =>
+	// 		problem.content.code
+	// 			.split("\n")
+	// 			.filter((s) => s.trim() !== "")
+	// 			.filter((s) => !s.startsWith("(")).length !== 0
+	// )
+	const numbers = fixed.map((prob) => prob.number);
+	const otherProblems = problems.filter((problem) => !numbers.includes(problem.number));
+	const newProblems = otherProblems.concat(fixed).sort((probA, probB) => probA.number - probB.number);
+	fs.writeFileSync("./problems.js", "const problems = " + JSON.stringify(newProblems) + "\nmodule.exports = problems;");
+
+	console.log(newProblems.length);
+};
 
 const toBlock = (str, email) => {
 	return {
@@ -14,17 +119,17 @@ const toBlock = (str, email) => {
 	};
 };
 
-const urlBlock = (url) => toBlock("**URL:** " + url, emailPlaceholder);
+const urlBlock = (url) => toBlock("**URL:** " + url);
 const tagBlock = (tags) => {
 	return {
-		...toBlock("**Problem-Tags**:", emailPlaceholder),
-		children: tags.map((tag) => toBlock(tag, emailPlaceholder)),
+		...toBlock("**Problem-Tags**:"),
+		children: tags.map((tag) => toBlock(tag)),
 	};
 };
 const syntaxBlock = (syntaxArr) => {
 	return {
-		...toBlock("**Syntax**:", emailPlaceholder),
-		children: syntaxArr.map((syntax) => toBlock("```clojure\n(" + syntax + " ...)```", emailPlaceholder)),
+		...toBlock("**Syntax**:"),
+		children: syntaxArr.map((syntax) => toBlock("```clojure\n(" + syntax + " ...)```")),
 	};
 };
 
@@ -70,7 +175,7 @@ const toClojureCodeString = (content) => {
 };
 
 const problemDescriptionBlock = (content) => {
-	return { ...toBlock("**Problem:**"), children: [toBlock(toClojureCodeString(content), emailPlaceholder)] };
+	return { ...toBlock("**Problem:**"), children: [toBlock(toClojureCodeString(content))] };
 };
 
 const getAllSyntaxArrs = (problems) => {
@@ -106,7 +211,7 @@ const removeDuplicateSyntax = (problems) => {
 const filterTags = (tags) => tags.filter((tag) => !tag.trim().endsWith(":"));
 
 const problemToPageChildren = (prob) => {
-	const result = [urlBlock(prob.url)];
+	const result = [toBlock("**" + prob.content.title + "**"), urlBlock(prob.url)];
 	if (prob.content.tags && prob.content.tags) {
 		const filteredTags = filterTags(prob.content.tags);
 		if (filteredTags.length !== 0) {
@@ -145,7 +250,6 @@ const saveProblemsEnriched = (problems) => {
 		"const enrichedProblems = " + JSON.stringify(enchrichedProblems) + "\nmodule.exports = enrichedProblems;"
 	);
 };
-saveProblemsEnriched(problems);
 
 const enrichedProblems = require("./enriched-problems");
 
@@ -174,10 +278,12 @@ const problemsPage = (savedProblems) => {
 
 const createVanillaJSON = () => {
 	fs.writeFileSync(
-		"./vanilla.json",
+		"../out/vanilla.json",
 		JSON.stringify([problemsPage(problems), ...enrichedProblems.map((problem) => enrichedToRoamJSON(problem))])
 	);
 };
+
+createVanillaJSON();
 
 // TODO: make field to set format of problem pages, can use $TITLE $NUMBER
 
