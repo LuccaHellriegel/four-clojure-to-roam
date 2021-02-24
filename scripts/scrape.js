@@ -43,16 +43,12 @@ const getTags = async (page) => {
 		.filter((s) => s !== "");
 };
 
-const regexIndexOf = (string, regex, startpos) => {
-	var indexOf = string.substring(startpos || 0).search(regex);
-	return indexOf >= 0 ? indexOf + (startpos || 0) : indexOf;
-};
-
 const splitDescription = (fullDescription) => {
 	const temp = fullDescription.split("Special Restrictions").map((s) => s.trim());
 
 	const restrictions = temp[1];
 
+	// TODO: in some cases we have \n( in the description because there is an example
 	const separatorIndex = temp[0].indexOf("\n(");
 
 	const desc = temp[0].slice(0, separatorIndex).trim();
@@ -70,7 +66,6 @@ const getBuiltInSyntax = async (page) => {
 		await page.waitForSelector(selector, { timeout: 5000 });
 		temp = await page.$$(selector);
 		temp = await Promise.all(temp.map((handler) => handler.evaluate((s) => s.innerText)));
-		// ...
 	} catch (error) {
 		return undefined;
 	}
@@ -136,18 +131,21 @@ const scrapeFourClojure = async () => {
 		// could be speed up by reducing the timeouts on the waitForSelectors
 		const content = await scrapeProblemPage(browser, urlObj.url);
 		if (content) pageObjects.push({ content, ...urlObj });
+		sleep(2000);
 	}
 
 	browser.close();
 
 	console.log(pageObjects.length);
 
-	saveProblems(pageObjects);
+	fs.writeFileSync("./original-problems.js", JSON.stringify(pageObjects));
 };
+
+const filterTimeoutProblems = (problems) => problems.filter((problem) => !problem.content.name);
 
 const rescrapeTimeouts = async () => {
 	const urlObjects = require("./problems")
-		.filter((problem) => !problem.content.name)
+		.filter((problem) => filterTimeoutProblems(problem))
 		.map((problem) => {
 			return { url: problem.url, number: problem.number };
 		});
@@ -169,8 +167,6 @@ const rescrapeTimeouts = async () => {
 	fs.writeFileSync("./timeout-problems.js", JSON.stringify(pageObjects));
 };
 
-const filterTimeoutProblems = (problems) => problems.filter((problem) => !problem.content.name);
-
 const merge = () => {
 	const problems = filterTimeoutProblems(require("./original-problems"));
 	const withoutSyntax = require("./timeout-problems");
@@ -183,13 +179,5 @@ const removeTimeoutProblems = () => {
 	const problems = require("./original-problems");
 	const res = filterTimeoutProblems(problems);
 
-	// console.log(
-	// 	problems.length,
-	// 	filterTimeoutProblems(problems).length,
-	// 	problems.filter((problem) => problem.content.name).length
-	// );
-	// const res = problems.concat(withoutSyntax).sort((probA, probB) => probA.number - probB.number);
 	fs.writeFileSync("./problems.js", "const problems = " + JSON.stringify(res) + "\nmodule.exports = problems;");
 };
-
-removeTimeoutProblems();
