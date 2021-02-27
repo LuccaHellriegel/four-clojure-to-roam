@@ -30,6 +30,12 @@ Example for the Problem 23-page:
 
 The syntax-block only includes syntax that is not already included in a lower problem.
 
+# For Developers
+
+- scripts/data/problems.js includes all the data of the problems (already filtered out non-existing problems)
+- scripts/roam-json.js includes general purpose functions for generating json that is Roam-ready (nanoid is the only dependency)
+- scripts/vanilla.js includes the functions for generating the blocks and pages of the vanilla-variant of the json-file
+
 # Ideas:
 
 Future variants are planned:
