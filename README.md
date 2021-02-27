@@ -1,6 +1,6 @@
 # Summary
 
-Download the vanilla.json in the out-folder and import it into your Roam-graph to get a page with a list of all the 4clojure problems and one page per problem that includes the URL, description, syntax and code of that problem.
+Download the vanilla.json in the out-folder and import it into your Roam-graph to get a page with a list of all the 4clojure problems and one page per problem that includes the URL, description, syntax and code of that problem (the import adds 145 pages!).
 
 # What:
 
