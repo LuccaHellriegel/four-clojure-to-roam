@@ -144,7 +144,7 @@ const scrapeFourClojure = async () => {
 const filterTimeoutProblems = (problems) => problems.filter((problem) => !problem.content.name);
 
 const rescrapeTimeouts = async () => {
-	const urlObjects = require("./problems")
+	const urlObjects = require("./data/problems")
 		.filter((problem) => filterTimeoutProblems(problem))
 		.map((problem) => {
 			return { url: problem.url, number: problem.number };
@@ -168,15 +168,15 @@ const rescrapeTimeouts = async () => {
 };
 
 const merge = () => {
-	const problems = filterTimeoutProblems(require("./original-problems"));
-	const withoutSyntax = require("./timeout-problems");
+	const problems = filterTimeoutProblems(require("./data/original-problems"));
+	const withoutSyntax = require("./data/timeout-problems");
 
 	const res = problems.concat(withoutSyntax).sort((probA, probB) => probA.number - probB.number);
 	fs.writeFileSync("./problems.js", "const problems = " + JSON.stringify(res) + "\nmodule.exports = problems;");
 };
 
 const removeTimeoutProblems = () => {
-	const problems = require("./original-problems");
+	const problems = require("./data/original-problems");
 	const res = filterTimeoutProblems(problems);
 
 	fs.writeFileSync("./problems.js", "const problems = " + JSON.stringify(res) + "\nmodule.exports = problems;");

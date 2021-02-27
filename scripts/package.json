@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "create": "node create.js",
+    "vanilla": "node vanilla.js",
     "scrape": "node scrape.js"
   },
   "author": "",

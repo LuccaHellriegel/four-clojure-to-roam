@@ -1,33 +1,60 @@
 const nanoid = require("nanoid").nanoid;
 
-const toRoamBlock = ({ str, children, email, time, uid }) => {
+const toRoamBlock = ({
+	str = "",
+	children = undefined,
+	email = undefined,
+	time = new Date().getTime(),
+	uid = nanoid(11),
+}) => {
 	return {
-		"edit-time:": time ? time : new Date().getTime(),
-		"edit-email": email ? email : undefined,
-		uid: uid ? uid : nanoid(11),
-		string: str ? str : "",
-		children: children ? children : undefined,
+		"edit-time:": time,
+		"edit-email": email,
+		uid: uid,
+		string: str,
+		children: children,
 	};
 };
 
-const toBold = (str) => "**" + str + "**";
+const strToRoamBlock = (str) => toRoamBlock({ str });
+
+const strArrToRoamBlocks = (strArr) => strArr.map((str) => strToRoamBlock(str));
 
 const toCodeString = ({ code, lang }) => {
 	// using this so this function can be pasted into Roam
 	// without breaking the code-formatting in Roam.
-	// really meta!
-	const temp = ``;
+	// meta!
+	const temp = "``";
 	return temp + "`" + lang + "\n" + code + temp + "`";
 };
 
-const toRoamPage = ({ title, children, email, time, uid }) => {
+const toClojureCodeString = (code) => toCodeString({ code, lang: "clojure" });
+
+const strToClojureCodeBlock = (str) => strToRoamBlock(toClojureCodeString(str));
+
+const toRoamPage = ({
+	title,
+	children = undefined,
+	email = undefined,
+	time = new Date().getTime(),
+	uid = nanoid(11),
+}) => {
 	return {
-		"create-email": email ? email : undefined,
-		"create-time": time ? time : new Date().getTime(),
-		"edit-time:": time ? time : new Date().getTime(),
-		"edit-email": email ? email : undefined,
-		uid: uid ? uid : nanoid(11),
-		children: children ? children : undefined,
+		"create-email": email,
+		"create-time": time,
+		"edit-time:": time,
+		"edit-email": email,
+		uid: uid,
+		children: children,
 		title: title,
 	};
+};
+
+module.exports = {
+	toRoamBlock,
+	toRoamPage,
+	toCodeString,
+	strToRoamBlock,
+	strArrToRoamBlocks,
+	strToClojureCodeBlock,
 };

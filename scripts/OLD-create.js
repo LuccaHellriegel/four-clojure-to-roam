@@ -1,7 +1,7 @@
 const fs = require("fs");
 const nanoid = require("nanoid").nanoid;
 
-const problems = require("./problems");
+const problems = require("./data/problems");
 
 const toBlock = (str, email) => {
 	return {
@@ -103,7 +103,7 @@ const removeDuplicateSyntax = (problems) => {
 // filter out all the tags without values (just contains tagName:)
 const filterTags = (tags) => tags.filter((tag) => !tag.trim().endsWith(":"));
 
-const problemToPageChildren = (prob) => {
+const problemToPageChildrenVanilla = (prob) => {
 	const result = [toBlock("**" + prob.content.title + "**"), urlBlock(prob.url)];
 	if (prob.content.tags && prob.content.tags) {
 		const filteredTags = filterTags(prob.content.tags);
@@ -123,28 +123,26 @@ const problemToPageChildren = (prob) => {
 
 const problemToTitle = (problem) => "4clojure - Problem " + problem.number;
 
-const saveProblemsEnriched = (problems) => {
+const saveProblemsEnrichedVanilla = (problems) => {
 	const enchrichedProblems = removeDuplicateSyntax(problems).map((prob) => {
 		return {
 			...prob,
 			roamPageData: {
-				// "create-email": emailPlaceholder,
 				"create-time": new Date().getTime(),
 				"edit-time:": new Date().getTime(),
-				// "edit-email": emailPlaceholder,
 				uid: nanoid(11),
-				children: problemToPageChildren(prob),
+				children: problemToPageChildrenVanilla(prob),
 				title: problemToTitle(prob),
 			},
 		};
 	});
 	fs.writeFileSync(
-		"./enriched-problems.js",
-		"const enrichedProblems = " + JSON.stringify(enchrichedProblems) + "\nmodule.exports = enrichedProblems;"
+		"./vanilla-problems.js",
+		"const vanillaProblems = " + JSON.stringify(enchrichedProblems) + "\nmodule.exports = vanillaProblems;"
 	);
 };
 
-const enrichedProblems = require("./enriched-problems");
+// const enrichedProblems = require("./vanilla-problems");
 
 const enrichedToRoamJSON = (enrichedProblem) => {
 	return enrichedProblem.roamPageData;
